@@ -7,6 +7,7 @@ from solver import Solver
 T = np.ndarray
 X = np.ndarray
 
+
 @dataclass
 class EulerMaruyama(Solver):
     """
@@ -30,7 +31,9 @@ class EulerMaruyama(Solver):
         Generate the next iterate X(n+1)
         """
         current_time = self.iter * self.step_size
-        mu_n = sivp.drift(current_time, self.x_values[self.iter])
-        sigma_n = sivp.vol(current_time, self.x_values[self.iter])
-        delta_x = (mu_n * self.step_size + sigma_n * self.brownian_increments[self.iter])
-        return self.x_values[self.iter] + delta_x
+        mu_n = sivp.drift(current_time, self.x_values[:, self.iter])
+        sigma_n = sivp.vol(current_time, self.x_values[:, self.iter])
+        delta_x = (
+            mu_n * self.step_size + sigma_n * self.brownian_increments[:, self.iter]
+        )
+        return self.x_values[:, self.iter] + delta_x

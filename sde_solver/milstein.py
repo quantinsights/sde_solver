@@ -33,15 +33,17 @@ class Milstein(Solver):
         Generate the next iterate X(n+1)
         """
         current_time = self.iter * self.step_size
-        mu_n = sivp.drift(current_time, self.x_values[self.iter])
-        sigma_n = sivp.vol(current_time, self.x_values[self.iter])
-        dvol_dx_n = sivp.dvol_dx(current_time, self.x_values[self.iter])
+        mu_n = sivp.drift(current_time, self.x_values[:, self.iter])
+        sigma_n = sivp.vol(current_time, self.x_values[:, self.iter])
+        dvol_dx_n = sivp.dvol_dx(current_time, self.x_values[:, self.iter])
 
         delta_x = (
             mu_n * self.step_size
-            + sigma_n * self.brownian_increments[self.iter]
-            + 0.5 * sigma_n * dvol_dx_n *
-            (self.brownian_increments[self.iter]**2 - self.step_size)
+            + sigma_n * self.brownian_increments[:, self.iter]
+            + 0.5
+            * sigma_n
+            * dvol_dx_n
+            * (self.brownian_increments[:, self.iter] ** 2 - self.step_size)
         )
 
-        return self.x_values[self.iter] + delta_x
+        return self.x_values[:, self.iter] + delta_x
